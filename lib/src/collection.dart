@@ -7,14 +7,13 @@ Future<List<dynamic>> resolveCollection(
   String collectionPath,
   SelectionContext selections,
 ) async {
-  // List of docs for this collection
+  /// List of docs for this collection
   List<dynamic> docs = [];
 
   // Query the collection with its path
   QuerySnapshot query = await firestore.collection(collectionPath).get();
 
   if ((selections.field.selectionSet?.selections?.length ?? 0) > 0) {
-
     // For every document, resolve the document using method
     await Future.forEach(query.docs, (doc) async {
       String path = collectionPath + "/" + doc.id;
@@ -26,7 +25,6 @@ Future<List<dynamic>> resolveCollection(
       );
       docs.add(docData);
     });
-    
   }
 
   return docs;

@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firegraph/collection.dart';
+import 'package:firegraph/src/collection.dart';
 import 'package:graphql_parser/graphql_parser.dart';
 
 Future<Map<String, dynamic>> resolveDocument(FirebaseFirestore firestore,
@@ -8,6 +8,7 @@ Future<Map<String, dynamic>> resolveDocument(FirebaseFirestore firestore,
   DocumentSnapshot doc;
   dynamic data;
 
+  /// doc data to be returned
   Map<String, dynamic> result = {};
 
   // If doc is provided, use it

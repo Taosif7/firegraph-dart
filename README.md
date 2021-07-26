@@ -1,9 +1,6 @@
 # Firegraph
 
 Firegraph is a plugin that lets you query firestore with GraphQL.
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/Taosif7/firegraph-dart)
-![GitHub](https://img.shields.io/github/license/Taosif7/firegraph-dart?style=flat)
-![GitHub last commit](https://img.shields.io/github/last-commit/Taosif7/firegraph-dart)
 
 ## Getting Started
 
@@ -14,14 +11,14 @@ Its very simple to get started. Just Install and use!
 To get the package from pub, run following command in your project directory
 
 ```bash
-pub get firegraph 
+flutter pub get firegraph 
 ```
 
 You can also include the package directly into pubspec.yaml file as
 
 ```yaml
 dependencies:
-    firegraph: ^0.0.1
+    firegraph: ^0.1.0
 ```
 
 ## Usage
@@ -47,23 +44,6 @@ query{
 ''');
 ```
 
-The result would be a map of following structure:
-
-```json
-{
-    "posts":[
-        {
-            "id":"cd89J6Z59Q5c7GJ3K2S4",
-            "body":"Hello Firegraph"
-        },
-        {
-            "id":"Q2WMKp2bH3BJRkjvILvH",
-            "body":"Hello World"
-        }
-    ]
-}
-```
-
 ### Querying Subcollections
 
 A subcollection can be treated as same as a type inside a parent type. For example, to query the subcollection `comments` inside document in the collection `posts` (the hierarchy is posts/doc/comments/doc) the instruction would be:
@@ -81,29 +61,6 @@ query{
     }
 }
 ''');
-```
-
-The result would be a map of following structure:
-
-```json
-{
-    "posts":[
-        {
-            "id":"cd89J6Z59Q5c7GJ3K2S4",
-            "message":"A Post with comments",
-            "comments":[
-                {
-                    "id":"d4qwwcp8o6i7mzxz",
-                    "message":"Great!"
-                },
-                {
-                    "id":"7ww4de6zxo6id4q",
-                    "message":"Awesome!"
-                }
-            ]
-        },
-    ]
-}
 ```
 
 This way you can query subcollections as deep as possible.

@@ -1,8 +1,8 @@
 name: firegraph
-description: A graphql wrapper on firebase
-version: 0.0.1
+description: Firegraph is a plugin that lets you query firestore with GraphQL.
+version: 0.1.0
 homepage: https://github.com/taosif7/firegraph-dart
-author: Taosif Jamal
+author: Taosif Jamal <Taosif.7@gmail.com>
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
