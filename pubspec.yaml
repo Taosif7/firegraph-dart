@@ -1,0 +1,20 @@
+name: firegraph
+description: A graphql wrapper on firebase
+version: 0.0.1
+homepage: https://github.com/taosif7/firegraph-dart
+author: Taosif Jamal
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cloud_firestore: ^2.4.0
+  graphql_parser: ^1.1.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  fake_cloud_firestore: ^1.1.2
