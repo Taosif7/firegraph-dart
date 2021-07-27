@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firegraph/src/order.dart';
 import 'package:firegraph/src/where.dart';
 import 'package:graphql_parser/graphql_parser.dart';
 import 'document.dart';
@@ -18,6 +19,12 @@ Future<List<dynamic>> resolveCollection(FirebaseFirestore firestore,
     if (collectionArgs['where'] != null) {
       var whereFilters = collectionArgs['where'];
       query = applyWhereFilters(query, whereFilters);
+    }
+
+    // If there's orderBy filters, apply them
+    if (collectionArgs['orderBy'] != null) {
+      var orderFilters = collectionArgs['orderBy'];
+      query = applyOrderFilters(query, orderFilters);
     }
   }
 

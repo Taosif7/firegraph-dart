@@ -245,6 +245,69 @@ Future<void> main() async {
       }
     }); */
   });
+
+  group("Order:", () {
+    test("ordering by single field", () async {
+      Map result = await Firegraph.resolve(instance, r'''
+      query{
+        users(orderBy:{
+          age:"Asc"
+        }){
+          id
+          age
+          name
+        }
+      }
+      ''');
+
+      if (result['users'].length < 2) return;
+      for (var i = 1; i < result['users'].length; i++) {
+        expect(
+            result['users'][i]['age'] >= result['users'][i - 1]['age'], true);
+      }
+    });
+
+    test("ordering by multiple fields", () async {
+      Map result = await Firegraph.resolve(instance, r'''
+      query{
+        users(orderBy:{
+          level:"asc",
+          age:"desc",
+        }){
+          id
+          age
+          level
+          name
+        }
+      }
+      ''');
+
+      List users = result['users'];
+      if (users.length < 2) return;
+
+      Map<int, List<Map>> levelledUsers = {};
+
+      levelledUsers[0] = [users[0]];
+      for (var i = 1; i < users.length; i++) {
+        expect(users[i - 1]['level'] <= users[i]['level'], true);
+
+        if (levelledUsers[i] == null) {
+          levelledUsers[i] = [users[i]];
+        } else
+          levelledUsers[i].add(users[i]);
+      }
+
+      levelledUsers.entries.forEach((sameLevelUserEntries) {
+        var sameLevelUsersList = sameLevelUserEntries.value;
+        if (sameLevelUsersList.length < 2) return;
+        for (var i = 1; i < sameLevelUsersList.length; i++) {
+          expect(
+              sameLevelUsersList[i - 1]['age'] >= sameLevelUsersList[i]['age'],
+              true);
+        }
+      });
+    });
+  });
 }
 
 Future<void> createTestData(FakeFirebaseFirestore instance) async {
@@ -254,28 +317,32 @@ Future<void> createTestData(FakeFirebaseFirestore instance) async {
     'age': 32,
     'gender': 'female',
     'hobbies': ['singing', 'painting', 'writing'],
-    'favourite_color': 'red'
+    'favourite_color': 'red',
+    'level': 2,
   });
   DocumentReference user2 = await instance.collection('users').add({
     'name': 'Matthew',
     'age': 48,
     'gender': 'male',
     'hobbies': ['dancing', 'playing music', 'photography'],
-    'favourite_color': 'blue'
+    'favourite_color': 'blue',
+    'level': 2,
   });
   DocumentReference user3 = await instance.collection('users').add({
     'name': 'Havana',
     'age': 16,
     'gender': 'female',
     'hobbies': ['singing', 'dancing', 'playing music'],
-    'favourite_color': 'green'
+    'favourite_color': 'green',
+    'level': 2,
   });
   DocumentReference user4 = await instance.collection('users').add({
     'name': 'John doe',
     'age': 36,
     'gender': 'male',
     'hobbies': ['singing', 'writing', 'photography'],
-    'favourite_color': null
+    'favourite_color': null,
+    'level': 3,
   });
 
   // posts collection
