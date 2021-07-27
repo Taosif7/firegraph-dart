@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -329,6 +331,60 @@ Future<void> main() async {
       }
     });
   });
+
+  group('Document Reference:', () {
+    test('fetch document for documentReference fields', () async {
+      Map result = await Firegraph.resolve(instance, r'''
+      query{
+        posts(limit:2){
+          id
+          body
+          author{
+            id
+            name
+            gender
+          }
+        }
+      }
+      ''');
+
+      for (var i = 0; i < result['posts'].length; i++) {
+        var post = result['posts'][i];
+        expect(post['author'] != null, true);
+        expect(post['author']['name'] != null, true);
+      }
+    });
+
+    test('fetch document for raw string fields', () async {
+      Map result = await Firegraph.resolve(instance, r'''
+      query{
+        posts(limit:2){
+          id
+          body
+          comments(limit:2){
+            id
+            message
+            user(path:"users/"){
+              id
+              name
+              gender
+            }
+          }
+        }
+      }
+      ''');
+
+      for (var i = 0; i < result['posts'].length; i++) {
+        var post = result['posts'][i];
+        for (var j = 0; j < post['comments'].length; j++) {
+          var comment = post['comments'][j];
+          expect(comment['id'] != null, true);
+          expect(comment['user'] != null, true);
+          expect(comment['user']['name'] != null, true);
+        }
+      }
+    });
+  });
 }
 
 Future<void> createTestData(FakeFirebaseFirestore instance) async {
@@ -370,8 +426,14 @@ Future<void> createTestData(FakeFirebaseFirestore instance) async {
   DocumentReference doc = await instance
       .collection('posts')
       .add({'body': 'This is first post!', 'author': user4});
-  await doc.collection('comments').add({'message': 'Lovely!'});
-  await doc.collection('comments').add({'message': 'Wow!'});
-  await doc.collection('comments').add({'message': 'Ammmazzzing!'});
-  await doc.collection('comments').add({'message': 'Welcome!'});
+  await doc
+      .collection('comments')
+      .add({'message': 'Lovely!', 'user': user1.id});
+  await doc.collection('comments').add({'message': 'Wow!', 'user': user3.id});
+  await doc
+      .collection('comments')
+      .add({'message': 'Ammmazzzing!', 'user': user3.id});
+  await doc
+      .collection('comments')
+      .add({'message': 'Welcome!', 'user': user2.id});
 }
