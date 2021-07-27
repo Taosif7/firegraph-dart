@@ -26,6 +26,11 @@ Future<List<dynamic>> resolveCollection(FirebaseFirestore firestore,
       var orderFilters = collectionArgs['orderBy'];
       query = applyOrderFilters(query, orderFilters);
     }
+
+    // If there's limit argument, apply limit to query
+    if (collectionArgs['limit'] != null) {
+      query = query.limit(collectionArgs['limit']);
+    }
   }
 
   // Query the collection with its path

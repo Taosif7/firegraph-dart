@@ -246,7 +246,7 @@ Future<void> main() async {
     }); */
   });
 
-  group("Order:", () {
+  group("Order & Limit:", () {
     test("ordering by single field", () async {
       Map result = await Firegraph.resolve(instance, r'''
       query{
@@ -306,6 +306,27 @@ Future<void> main() async {
               true);
         }
       });
+    });
+
+    test("limiting collection & sub-collection", () async {
+      Map result = await Firegraph.resolve(instance, r'''
+      query{
+        posts{
+          id
+          comments(limit:1){
+            id
+          }
+        }
+        users(limit:1){
+          id
+        }
+      }
+      ''');
+
+      expect(result['users'].length, 1);
+      for (var i = 0; i < result['posts'].length; i++) {
+        expect(result['posts'][i]['comments'].length, 1);
+      }
     });
   });
 }
