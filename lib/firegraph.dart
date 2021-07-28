@@ -28,6 +28,9 @@ class Firegraph {
     await Future.forEach(selectionSet.selections, (SelectionContext set) async {
       String collectionPath = set.field.fieldName.name;
       String collectionName = set.field.fieldName.name;
+      String collectionAlias = set.field.fieldName.alias?.alias;
+      if (collectionAlias != null)
+        collectionPath = collectionName = set.field.fieldName.alias.name;
 
       // Parse list of field selection arguments into a map
       List<ArgumentContext> arguments = set.field.arguments;
@@ -41,7 +44,7 @@ class Firegraph {
         collectionArgs: argumentsMap,
       );
 
-      result[collectionName] = collectionResult;
+      result[collectionAlias ?? collectionName] = collectionResult;
     });
 
     return result;

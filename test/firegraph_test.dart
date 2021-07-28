@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 
@@ -384,6 +385,30 @@ Future<void> main() async {
         }
       }
     });
+  });
+
+  test("It can use aliases", () async {
+    Map result = await Firegraph.resolve(instance, r'''
+    query{
+      articles: posts(limit:2){
+        content: body
+        reviews: comments{
+          comment: message
+        }
+      }
+    }
+    ''');
+
+    expect(result['articles'] != null, true);
+    for (int i = 0; i < result['articles'].length; i++) {
+      var article = result['articles'][i];
+      expect(article['content'] != null, true);
+      expect(article['reviews'] != null, true);
+      for (int j = 0; j < article['reviews'].length; j++) {
+        var review = article['reviews'][j];
+        expect(review['comment'] != null, true);
+      }
+    }
   });
 }
 

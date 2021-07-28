@@ -28,6 +28,8 @@ Future<Map<String, dynamic>> resolveDocument(FirebaseFirestore firestore,
     // Iterate over document's all fields
     await Future.forEach(fields, (SelectionContext field) async {
       String fieldName = field.field.fieldName.name;
+      String fieldAlias = field.field.fieldName.alias?.alias;
+      if (fieldAlias != null) fieldName = field.field.fieldName.alias.name;
 
       // If field has selection set, treat it as document reference or a sub-collection
       if ((field.field.selectionSet?.selections?.length ?? 0) > 0) {
@@ -47,7 +49,7 @@ Future<Map<String, dynamic>> resolveDocument(FirebaseFirestore firestore,
             field.field.selectionSet,
           );
 
-          result[fieldName] = document;
+          result[fieldAlias ?? fieldName] = document;
         } else if (data[fieldName] is DocumentReference) {
           // If its a document reference field, fetch document through reference
           DocumentReference docRef = data[fieldName];
@@ -57,7 +59,7 @@ Future<Map<String, dynamic>> resolveDocument(FirebaseFirestore firestore,
             documentPath,
             field.field.selectionSet,
           );
-          result[fieldName] = document;
+          result[fieldAlias ?? fieldName] = document;
         } else {
           // Else consider it as a  sub-collection and fetch documents in it
           String collectionPath = documentPath + "/" + fieldName;
@@ -68,14 +70,14 @@ Future<Map<String, dynamic>> resolveDocument(FirebaseFirestore firestore,
             collectionArgs: argumentsMap,
           );
 
-          result[fieldName] = collectionResult;
+          result[fieldAlias ?? fieldName] = collectionResult;
         }
       } else if (fieldName == 'id') {
         // If field is id, put Id of doc into result
         result['id'] = doc.id;
       } else {
         // Else put the field as is
-        result[fieldName] = data[fieldName];
+        result[fieldAlias ?? fieldName] = data[fieldName];
       }
     });
   }
