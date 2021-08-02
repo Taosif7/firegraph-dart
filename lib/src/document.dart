@@ -1,10 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firegraph/src/CacheManager.dart';
 import 'package:firegraph/src/arguments.dart';
 import 'package:firegraph/src/collection.dart';
 import 'package:graphql_parser/graphql_parser.dart';
 
-Future<Map<String, dynamic>> resolveDocument(FirebaseFirestore firestore,
-    String documentPath, SelectionSetContext selectionSet,
+Future<Map<String, dynamic>> resolveDocument(
+    FirebaseFirestore firestore,
+    String documentPath,
+    SelectionSetContext selectionSet,
+    CacheManager cacheManager,
     {DocumentSnapshot fetchedDocument}) async {
   DocumentSnapshot doc;
   dynamic data;
@@ -12,14 +16,24 @@ Future<Map<String, dynamic>> resolveDocument(FirebaseFirestore firestore,
   /// doc data to be
   Map<String, dynamic> result = {};
 
-  // If doc is provided, use it
+  /// Cached Document stored in cache manager
+  DocumentSnapshot cachedDoc;
+
   if (fetchedDocument != null) {
+    // If doc is provided, use it
     doc = fetchedDocument;
     data = fetchedDocument.data();
+  } else if ((cachedDoc = cacheManager.getCache(documentPath)) != null) {
+    // If cache exists, use it
+    doc = cachedDoc;
+    data = doc.data();
   } else {
     // Fetch the doc if not provided
     doc = await firestore.doc(documentPath).get();
     data = doc.data();
+
+    // store fetched doc into cacheManager
+    cacheManager.addCache(doc);
   }
 
   if ((selectionSet?.selections?.length ?? 0) > 0) {
@@ -47,6 +61,7 @@ Future<Map<String, dynamic>> resolveDocument(FirebaseFirestore firestore,
             firestore,
             documentPath,
             field.field.selectionSet,
+            cacheManager,
           );
 
           result[fieldAlias ?? fieldName] = document;
@@ -58,6 +73,7 @@ Future<Map<String, dynamic>> resolveDocument(FirebaseFirestore firestore,
             firestore,
             documentPath,
             field.field.selectionSet,
+            cacheManager,
           );
           result[fieldAlias ?? fieldName] = document;
         } else {
@@ -67,6 +83,7 @@ Future<Map<String, dynamic>> resolveDocument(FirebaseFirestore firestore,
             firestore,
             collectionPath,
             field,
+            cacheManager,
             collectionArgs: argumentsMap,
           );
 

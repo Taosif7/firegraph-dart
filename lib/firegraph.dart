@@ -1,6 +1,7 @@
 library firegraph;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firegraph/src/CacheManager.dart';
 import 'package:firegraph/src/arguments.dart';
 import 'package:firegraph/src/collection.dart';
 import 'package:graphql_parser/graphql_parser.dart';
@@ -16,6 +17,9 @@ class Firegraph {
   ) async {
     /// result of the query as a map
     Map<String, dynamic> result = {};
+
+    /// Cache to store current cached document
+    CacheManager cacheManager = new CacheManager();
 
     // Parse query int selection sets
     var tokens = scan(query);
@@ -41,6 +45,7 @@ class Firegraph {
         firestore,
         collectionPath,
         set,
+        cacheManager,
         collectionArgs: argumentsMap,
       );
 

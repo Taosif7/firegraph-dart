@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:firegraph/src/CacheManager.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -410,6 +411,58 @@ Future<void> main() async {
       }
     }
   });
+
+  /// This is more of a debug function than a test
+  test("Caching of documents", () async {
+    var adds = 0;
+    var updates = 0;
+    var hits = 0;
+    var misses = 0;
+    var requests = 0;
+
+    CacheManagerListener listener =
+        new CacheManagerListener(onCacheAdd: (path, doc) {
+      adds++;
+    }, onCacheHit: (path, doc) {
+      hits++;
+    }, onCacheMiss: (path) {
+      misses++;
+    }, onCacheRequest: (path) {
+      requests++;
+    }, onCacheUpdate: (path, doc) {
+      updates++;
+    });
+    CacheManager.addListener(listener);
+
+    Map result = await Firegraph.resolve(instance, r'''
+    query{
+      posts{
+        body
+        author{
+          name
+        }
+        comments{
+          message
+          user(path:"users/"){
+            name
+          }
+        }
+      }
+      users{
+        name
+      }
+    }
+    ''');
+
+    // print('Adds: $adds');
+    // print('Requests: $requests');
+    // print('Hits: $hits');
+    // print('Misses: $misses');
+    // print('Updates: $updates');
+
+    CacheManager.removeListener(listener);
+    expect(hits > 0, true);
+  });
 }
 
 Future<void> createTestData(FakeFirebaseFirestore instance) async {
@@ -448,17 +501,30 @@ Future<void> createTestData(FakeFirebaseFirestore instance) async {
   });
 
   // posts collection
-  DocumentReference doc = await instance
+  DocumentReference post1 = await instance
       .collection('posts')
       .add({'body': 'This is first post!', 'author': user4});
-  await doc
+  await post1
       .collection('comments')
       .add({'message': 'Lovely!', 'user': user1.id});
-  await doc.collection('comments').add({'message': 'Wow!', 'user': user3.id});
-  await doc
+  await post1.collection('comments').add({'message': 'Wow!', 'user': user3.id});
+  await post1
       .collection('comments')
       .add({'message': 'Ammmazzzing!', 'user': user3.id});
-  await doc
+  await post1
       .collection('comments')
       .add({'message': 'Welcome!', 'user': user2.id});
+  DocumentReference post2 = await instance
+      .collection('posts')
+      .add({'body': 'This is second post', 'author': user3});
+  await post2
+      .collection('comments')
+      .add({'message': 'Cooooool', 'user': user2.id});
+  await post2.collection('comments').add({'message': 'nice', 'user': user1.id});
+  await post2
+      .collection('comments')
+      .add({'message': 'hmmmmmm', 'user': user4.id});
+  await post2
+      .collection('comments')
+      .add({'message': 'Thanks All!', 'user': user3.id});
 }
