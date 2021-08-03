@@ -76,7 +76,7 @@ The result would be a map of following structure:
 }
 ```
 
-### Querying Subcollections
+## Querying Subcollections
 
 A subcollection can be treated as same as a type inside a parent type. For example, to query the subcollection `comments` inside document in the collection `posts` (the hierarchy is posts/doc/comments/doc) the instruction would be:
 
@@ -119,3 +119,63 @@ The result would be a map of following structure:
 ```
 
 This way you can query subcollections as deep as possible
+
+## Querying Reference documents
+
+In a firebase document, there can be a `DocumentReference` field holding a reference to a document. In another case, there can be a string field holding plain `path` to a document or just document ID. We support querying those reference documents as a child of original document.
+
+For example, a document in posts collections holds author DocumentReference field which references to a document in users collection, this can be queried in the following manner:
+
+```dart
+Map posts = await Firegraph.resolve(FirebaseFirestore.instance, r'''
+query{
+    posts{
+        id
+        body
+        author{
+            id
+            name
+            age
+        }
+    }
+}
+''');
+```
+
+The result would be a map of following structure:
+
+```json
+{
+    "posts":[
+        {
+            "id":"cd89J6Z59Q5c7GJ3K2S4",
+            "message":"A Post with comments",
+            "author":{
+                "id":"cds54RWc2ib8poM546Y9X",
+                "name":"John Doe",
+                "age":23
+            }
+        },
+    ]
+}
+```
+
+Above query loads only id, name and age field from the document referenced by author field *if it exists*, and inserts it as a map with the same field name in the document result.
+
+For plain string fields that hold the path to the document, same structure is defined for the sake of simplicity. But in case where only ID is stored in the field, the path to collection *must be provided* in `path` parameter with an ending slash(`/`). Example:
+
+```dart
+Map posts = await Firegraph.resolve(FirebaseFirestore.instance, r'''
+query{
+    posts{
+        id
+        body
+        authorId(path:"users/"){
+            id
+            name
+            age
+        }
+    }
+}
+''');
+```

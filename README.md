@@ -18,7 +18,7 @@ You can also include the package directly into pubspec.yaml file as
 
 ```yaml
 dependencies:
-    firegraph: ^0.1.0
+    firegraph: ^1.0.0
 ```
 
 ## Usage
@@ -31,7 +31,6 @@ import 'package:firegraph/firegraph.dart'
 
 ## Querying
 
----
 ### Querying Collections
 
 A collection can be queried same as a graphQL type query. For example, to query the collection `posts` with `id` and `message` fields for each document, the instruction would be:
@@ -68,11 +67,70 @@ query{
 
 This way you can query subcollections as deep as possible.
 
-for more reference on queries collections & subcollections, checkout [examples](example/querying.md).
+### Querying Reference documents
+
+A `DocumentReference` field holding a reference to a document or a string field holding plain `path` to a document can be queried as a child of original document.
+
+For example, a document in posts collections holds author DocumentReference which is a document in users collection, this can be queried in the following manner:
+
+```dart
+Map posts = await Firegraph.resolve(FirebaseFirestore.instance, r'''
+query{
+    posts{
+        id
+        body
+        author{
+            id
+            name
+            age
+        }
+    }
+}
+''');
+```
+
+For String fields that hold the path to the document, same can be done. Aditionally, a parent path to document can be provided with `path` parameter. Example:
+
+```dart
+Map posts = await Firegraph.resolve(FirebaseFirestore.instance, r'''
+query{
+    posts{
+        id
+        body
+        authorId(path:"users/"){
+            id
+            name
+            age
+        }
+    }
+}
+''');
+```
+
+for more reference on queries collections, subcollections & Documents, checkout [examples](example/querying.md).
+
+## Aliases
+
+We support aliases with same query structure as GraphQL. example:
+
+```dart
+Map posts = await Firegraph.resolve(FirebaseFirestore.instance, r'''
+query{
+    articles: posts{
+        id
+        articleBody: body
+        writer: author{
+            id
+            name
+            age
+        }
+    }
+}
+''');
+```
 
 ## Filtering queries
 
----
 Document queries can be filtered using `where` query of firebase. We have support for every `where` query of firebase as graphql `where` arguments.
 
 For example, if you want to query all users with age>30 you have to use `_gt` (greater than) suffix in where filter. Example query would be:
@@ -113,7 +171,6 @@ These filters can be applied to any collection or subcollection query, whether n
 
 ## Ordering queries
 
----
 Document queries can be ordered using `orderBy` query of firebase. You can supply an `orderBy` argument of object type, defining the fields you want to sort by and the order of those fields as `asc`ending or `desc`ending.
 
 For example, if you want to query the users in ascending order of their age, your query would look like:
@@ -136,7 +193,6 @@ For more references, checkout the [examples](example/filtering.md#ordering-queri
 
 ## Limit queries
 
----
 To limit the number of queried documents in a collection or subcollection, supply `limit` argument.
 
 For example, to query only 10 users, your query would look like:
@@ -153,6 +209,11 @@ query{
 ''');
 ```
 
+## Caching
+
+Firegraph implements a simple cache mechanism that stores all referenced documents queried via collections and sub-collections and provides cache benefit to explicitly referenced documents i.e. *documents those are queried by reference*.
+
+`Note` that cache is distinct for each and every query.
 
 ## Contributing
 

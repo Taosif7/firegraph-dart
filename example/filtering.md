@@ -2,7 +2,6 @@
 
 ## Filtering queries
 
----
 Document queries can be filtered using `where` query of firebase. We have support for every `where` query of firebase as graphql `where` arguments.
 
 For example, if you want to query all users with age>30 you have to use `_gt` key suffix in where filter. Example dart code would be:
@@ -82,7 +81,6 @@ To create or view indexes in your firebase project, [follow this link](https://c
 
 ## Ordering queries
 
----
 Document queries can be ordered using `orderBy` query of firebase. You can supply an `orderBy` argument of object type, defining the fields you want to sort by and the order of those fields as `asc`ending or `desc`ending.
 
 For example, if you want to query the users in ascending order of their age, your query would look like:
@@ -122,7 +120,6 @@ query{
 
 ## Limit queries
 
----
 To limit the number of queried documents in a collection or subcollection, supply `limit` argument.
 
 For example, to query only 10 users, your query would look like:
