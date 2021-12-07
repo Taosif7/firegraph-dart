@@ -8,6 +8,12 @@ import 'package:graphql_parser/graphql_parser.dart';
 
 /// Firegraph class statically provides all querying and global level operations
 class Firegraph {
+  /// "\__all__" : When this field is included inside a document query, all fields of the document are loaded excluding sub-collections
+  static const ALL_FIELDS_IDENTIFIER = "__all__";
+
+  /// "id" : When this field is included inside a document query, id of the document is loaded
+  static const ID_FIELD_IDENTIFIER = "id";
+
   /// Method to query firestore
   /// [firestore] is an instance of FirebaseFirestore
   /// [query] is a raw string that should define the structure of data to be queried

@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:math';
-
 import 'package:firegraph/src/CacheManager.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -47,6 +44,21 @@ Future<void> main() async {
       expect(result['posts'] != null, true);
       expect(result['posts'][0]['comments'] != null, true);
       expect(result['posts'][0]['comments'][0]['id'] != null, true);
+    });
+
+    test('It loads all fields when no fields are specified or using __all__ identifier', () async {
+      var result = await Firegraph.resolve(instance, r'''
+          query{
+            posts{
+              __all__
+              author {}
+            }
+          }''');
+
+      expect(result['posts'] != null, true);
+      expect(result['posts'][0]['id'] != null, true);
+      expect(result['posts'][0]['author'] != null, true);
+      expect(result['posts'][0]['author']['id'] != null, true);
     });
   });
 

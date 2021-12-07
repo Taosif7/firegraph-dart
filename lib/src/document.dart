@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firegraph/firegraph.dart';
 import 'package:firegraph/src/CacheManager.dart';
 import 'package:firegraph/src/arguments.dart';
 import 'package:firegraph/src/collection.dart';
@@ -39,6 +40,13 @@ Future<Map<String, dynamic>> resolveDocument(
   if ((selectionSet?.selections?.length ?? 0) > 0) {
     var fields = selectionSet.selections;
 
+    // find all fields identifier, and include whole document if found
+    if (fields.any((f) => f.field.fieldName.name == Firegraph.ALL_FIELDS_IDENTIFIER)) {
+      fields.removeWhere((f) => f.field.fieldName.name == Firegraph.ALL_FIELDS_IDENTIFIER);
+      result = doc.data();
+      result.putIfAbsent(Firegraph.ID_FIELD_IDENTIFIER, () => doc.id);
+    }
+
     // Iterate over document's all fields
     await Future.forEach(fields, (SelectionContext field) async {
       String fieldName = field.field.fieldName.name;
@@ -46,7 +54,7 @@ Future<Map<String, dynamic>> resolveDocument(
       if (fieldAlias != null) fieldName = field.field.fieldName.alias.name;
 
       // If field has selection set, treat it as document reference or a sub-collection
-      if ((field.field.selectionSet?.selections?.length ?? 0) > 0) {
+      if (field.field.selectionSet != null && field.field.selectionSet.selections.length >= 0) {
         // Parse arguments for the field selection set into a map
         List<ArgumentContext> arguments = field.field.arguments;
         Map argumentsMap = parseArguments(arguments);
@@ -89,14 +97,17 @@ Future<Map<String, dynamic>> resolveDocument(
 
           result[fieldAlias ?? fieldName] = collectionResult;
         }
-      } else if (fieldName == 'id') {
+      } else if (fieldName == Firegraph.ID_FIELD_IDENTIFIER) {
         // If field is id, put Id of doc into result
-        result['id'] = doc.id;
+        result[Firegraph.ID_FIELD_IDENTIFIER] = doc.id;
       } else {
         // Else put the field as is
         result[fieldAlias ?? fieldName] = data[fieldName];
       }
     });
+  } else {
+    result = doc.data();
+    result.putIfAbsent(Firegraph.ID_FIELD_IDENTIFIER, () => doc.id);
   }
 
   return result;

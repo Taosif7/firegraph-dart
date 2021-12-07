@@ -5,11 +5,7 @@ import 'package:firegraph/src/where.dart';
 import 'package:graphql_parser/graphql_parser.dart';
 import 'document.dart';
 
-Future<List<dynamic>> resolveCollection(
-    FirebaseFirestore firestore,
-    String collectionPath,
-    SelectionContext selections,
-    CacheManager cacheManager,
+Future<List<dynamic>> resolveCollection(FirebaseFirestore firestore, String collectionPath, SelectionContext selections, CacheManager cacheManager,
     {Map collectionArgs}) async {
   /// List of docs for this collection
   List<dynamic> docs = [];
@@ -40,23 +36,21 @@ Future<List<dynamic>> resolveCollection(
   // Query the collection with its path
   QuerySnapshot querySnapshot = await query.get();
 
-  if ((selections.field.selectionSet?.selections?.length ?? 0) > 0) {
-    // For every document, resolve the document using method
-    await Future.forEach(querySnapshot.docs, (QueryDocumentSnapshot doc) async {
-      // Add fetched doc into cache manager
-      cacheManager.addCache(doc);
+  // For every document, resolve the document using method
+  await Future.forEach(querySnapshot.docs, (QueryDocumentSnapshot doc) async {
+    // Add fetched doc into cache manager
+    cacheManager.addCache(doc);
 
-      String path = collectionPath + "/" + doc.id;
-      Map docData = await resolveDocument(
-        firestore,
-        path,
-        selections.field.selectionSet,
-        cacheManager,
-        fetchedDocument: doc,
-      );
-      docs.add(docData);
-    });
-  }
+    String path = collectionPath + "/" + doc.id;
+    Map docData = await resolveDocument(
+      firestore,
+      path,
+      selections.field.selectionSet,
+      cacheManager,
+      fetchedDocument: doc,
+    );
+    docs.add(docData);
+  });
 
   return docs;
 }
