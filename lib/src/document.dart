@@ -42,7 +42,6 @@ Future<Map<String, dynamic>> resolveDocument(
 
     // find all fields identifier, and include whole document if found
     if (fields.any((f) => f.field.fieldName.name == Firegraph.ALL_FIELDS_IDENTIFIER)) {
-      fields.removeWhere((f) => f.field.fieldName.name == Firegraph.ALL_FIELDS_IDENTIFIER);
       result = doc.data();
       result.putIfAbsent(Firegraph.ID_FIELD_IDENTIFIER, () => doc.id);
     }
@@ -109,6 +108,9 @@ Future<Map<String, dynamic>> resolveDocument(
     result = doc.data();
     result.putIfAbsent(Firegraph.ID_FIELD_IDENTIFIER, () => doc.id);
   }
+
+  // Finally remove the All field identifier from result if exists
+  result.removeWhere((key, value) => key == Firegraph.ALL_FIELDS_IDENTIFIER);
 
   return result;
 }

@@ -46,7 +46,9 @@ Future<void> main() async {
       expect(result['posts'][0]['comments'][0]['id'] != null, true);
     });
 
-    test('It loads all fields when no fields are specified or using __all__ identifier', () async {
+    test(
+        'It loads all fields when no fields are specified or using __all__ identifier',
+        () async {
       var result = await Firegraph.resolve(instance, r'''
           query{
             posts{
@@ -56,9 +58,11 @@ Future<void> main() async {
           }''');
 
       expect(result['posts'] != null, true);
-      expect(result['posts'][0]['id'] != null, true);
-      expect(result['posts'][0]['author'] != null, true);
-      expect(result['posts'][0]['author']['id'] != null, true);
+      (result['posts'] as List<dynamic>).forEach((e) {
+        expect(e['id'] != null, true);
+        expect(e['author'] != null, true);
+        expect(e['author']['id'] != null, true);
+      });
     });
   });
 
