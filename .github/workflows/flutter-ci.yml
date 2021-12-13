@@ -17,8 +17,8 @@ jobs:
 
     steps:
       - uses: subosito/flutter-action@v1
-          with:
-            channel: 'dev' # 'dev', 'alpha', default to: 'stable'
+        with:
+          channel: 'dev' # 'dev', 'alpha', default to: 'stable'
 
       # Note: This workflow uses the latest stable version of the Dart SDK.
       # You can specify other versions if desired, see documentation here:
