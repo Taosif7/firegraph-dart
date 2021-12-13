@@ -6,7 +6,6 @@ author: Taosif Jamal <Taosif.7@gmail.com>
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
-  flutter: ">=1.17.0"
 
 dependencies:
   flutter:
