@@ -29,8 +29,7 @@ class Firegraph {
 
     // Parse query int selection sets
     var tokens = scan(query);
-    var definitions = new Parser(tokens).parseDocument().definitions.first
-        as OperationDefinitionContext;
+    var definitions = new Parser(tokens).parseDocument().definitions.first as OperationDefinitionContext;
     var selectionSet = definitions.selectionSet;
 
     // for every root selection, which is a collection
@@ -39,8 +38,7 @@ class Firegraph {
       String collectionPath = set.field.fieldName.name;
       String collectionName = set.field.fieldName.name;
       String collectionAlias = set.field.fieldName.alias?.alias;
-      if (collectionAlias != null)
-        collectionPath = collectionName = set.field.fieldName.alias.name;
+      if (collectionAlias != null) collectionPath = collectionName = set.field.fieldName.alias.name;
 
       // Parse list of field selection arguments into a map
       List<ArgumentContext> arguments = set.field.arguments;

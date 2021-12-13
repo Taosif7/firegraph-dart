@@ -35,8 +35,5 @@ jobs:
       - name: Format Code
         run: flutter format --set-exit-if-changed .
 
-      - name: Flutter Analyse
-        run: flutter analyze
-
       - name: Test
         run: flutter test

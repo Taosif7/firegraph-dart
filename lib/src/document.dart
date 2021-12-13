@@ -6,10 +6,7 @@ import 'package:firegraph/src/collection.dart';
 import 'package:graphql_parser/graphql_parser.dart';
 
 Future<Map<String, dynamic>> resolveDocument(
-    FirebaseFirestore firestore,
-    String documentPath,
-    SelectionSetContext selectionSet,
-    CacheManager cacheManager,
+    FirebaseFirestore firestore, String documentPath, SelectionSetContext selectionSet, CacheManager cacheManager,
     {DocumentSnapshot fetchedDocument}) async {
   DocumentSnapshot doc;
   dynamic data;
