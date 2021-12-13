@@ -41,7 +41,8 @@ Future<Map<String, dynamic>> resolveDocument(
     var fields = selectionSet.selections;
 
     // find all fields identifier, and include whole document if found
-    if (fields.any((f) => f.field.fieldName.name == Firegraph.ALL_FIELDS_IDENTIFIER)) {
+    if (fields.any(
+        (f) => f.field.fieldName.name == Firegraph.ALL_FIELDS_IDENTIFIER)) {
       result = doc.data();
       result.putIfAbsent(Firegraph.ID_FIELD_IDENTIFIER, () => doc.id);
     }
@@ -53,7 +54,8 @@ Future<Map<String, dynamic>> resolveDocument(
       if (fieldAlias != null) fieldName = field.field.fieldName.alias.name;
 
       // If field has selection set, treat it as document reference or a sub-collection
-      if (field.field.selectionSet != null && field.field.selectionSet.selections.length >= 0) {
+      if (field.field.selectionSet != null &&
+          field.field.selectionSet.selections.length >= 0) {
         // Parse arguments for the field selection set into a map
         List<ArgumentContext> arguments = field.field.arguments;
         Map argumentsMap = parseArguments(arguments);
