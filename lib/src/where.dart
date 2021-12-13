@@ -8,9 +8,7 @@ Query applyWhereFilters(Query query, Map<String, dynamic> filters) {
     dynamic value = filter.value;
     List<String> keySplits = key.split("_");
     String operator = keySplits.last;
-    String keyName = keySplits.length > 0
-        ? key.substring(0, key.length - operator.length - 1)
-        : key;
+    String keyName = keySplits.length > 0 ? key.substring(0, key.length - operator.length - 1) : key;
 
     switch (operator) {
       case 'eq':

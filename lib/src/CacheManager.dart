@@ -10,11 +10,9 @@ class CacheManager {
 
   void addCache(DocumentSnapshot doc) {
     if (_cache[doc.reference.path] != null) {
-      _listeners.forEach(
-          (listener) => listener.onCacheUpdate?.call(doc.reference.path, doc));
+      _listeners.forEach((listener) => listener.onCacheUpdate?.call(doc.reference.path, doc));
     } else {
-      _listeners.forEach(
-          (listener) => listener.onCacheAdd?.call(doc.reference.path, doc));
+      _listeners.forEach((listener) => listener.onCacheAdd?.call(doc.reference.path, doc));
     }
 
     _cache[doc.reference.path] = doc;

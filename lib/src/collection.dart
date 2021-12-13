@@ -5,7 +5,11 @@ import 'package:firegraph/src/where.dart';
 import 'package:graphql_parser/graphql_parser.dart';
 import 'document.dart';
 
-Future<List<dynamic>> resolveCollection(FirebaseFirestore firestore, String collectionPath, SelectionContext selections, CacheManager cacheManager,
+Future<List<dynamic>> resolveCollection(
+    FirebaseFirestore firestore,
+    String collectionPath,
+    SelectionContext selections,
+    CacheManager cacheManager,
     {Map collectionArgs}) async {
   /// List of docs for this collection
   List<dynamic> docs = [];
